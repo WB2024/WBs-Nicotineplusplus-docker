@@ -6,9 +6,12 @@ FROM aandree5/gui-web-base:v1.1
 LABEL org.opencontainers.image.authors="WB2024" \
       org.opencontainers.image.title="Nicotine+ with Xpra" \
       org.opencontainers.image.description="Nicotine+ Soulseek client with full clipboard support, audio forwarding, and proper UI via Xpra" \
-      org.opencontainers.image.url="https://github.com/WB2024/WBs-Nictotineplusplus-docker" \
-      org.opencontainers.image.source="https://github.com/WB2024/WBs-Nictotineplusplus-docker" \
+      org.opencontainers.image.url="https://github.com/WB2024/WBs-Nicotineplusplus-docker" \
+      org.opencontainers.image.source="https://github.com/WB2024/WBs-Nicotineplusplus-docker" \
       org.opencontainers.image.licenses="MIT"
+
+# Switch to root for installations
+USER root
 
 # Nicotine+ specific environment variables
 ENV NICOTINE_LOGIN="" \
@@ -17,17 +20,17 @@ ENV NICOTINE_LOGIN="" \
     NICOTINE_DARKMODE="True" \
     NICOTINE_UPNP="False" \
     NICOTINE_LISTEN_PORT="2234" \
-    NICOTINE_DATA_DIR="/home/gwb/.local/share/nicotine" \
-    NICOTINE_CONFIG_DIR="/home/gwb/.config/nicotine"
+    NICOTINE_DATA_DIR="/home/guiwebuser/.local/share/nicotine" \
+    NICOTINE_CONFIG_DIR="/home/guiwebuser/.config/nicotine"
 
 # Expose Nicotine+ listening port (default 2234)
 EXPOSE 2234
 
-# Install Nicotine+ and dependencies
+# Install Nicotine+ dependencies and build from PyPI
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    software-properties-common \
     python3-gi \
     python3-gi-cairo \
+    python3-pip \
     gir1.2-gtk-4.0 \
     gir1.2-adw-1 \
     gir1.2-gspell-1 \
@@ -35,34 +38,33 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     librsvg2-common \
     fonts-noto-cjk \
     gettext \
-    && add-apt-repository -y ppa:nicotine-team/stable \
-    && apt-get update \
-    && apt-get install -y nicotine \
+    git \
+    && pip3 install --break-system-packages nicotine-plus \
     && apt-get autoremove -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Create Nicotine+ directories
+# Create Nicotine+ directories with correct permissions (user guiwebuser, uid 1000)
 RUN mkdir -p "${NICOTINE_CONFIG_DIR}" \
              "${NICOTINE_DATA_DIR}/plugins" \
              "${NICOTINE_DATA_DIR}/downloads" \
              "${NICOTINE_DATA_DIR}/incomplete" \
              "${NICOTINE_DATA_DIR}/received" \
-    && chown -R gwb:gwb "${NICOTINE_CONFIG_DIR}" "${NICOTINE_DATA_DIR}"
+    && chown -R 1000:1000 "${NICOTINE_CONFIG_DIR}" "${NICOTINE_DATA_DIR}"
 
-# Copy configuration files and scripts
-COPY --chown=gwb:gwb config/config-default "${NICOTINE_CONFIG_DIR}/config-default"
-COPY --chmod=755 scripts/entrypoint.sh /usr/local/bin/entrypoint.sh
+# Copy configuration files
+COPY --chown=1000:1000 config/config-default "${NICOTINE_CONFIG_DIR}/config-default"
 COPY --chmod=755 scripts/configure-nicotine.sh /usr/local/bin/configure-nicotine.sh
 
-# Configure Xpra content-type mappings for Nicotine+
-# This optimizes encoding for different window types
-RUN configure-xpra \
-    --content-type "class-instance:nicotine=text" \
-    --content-type "title:Nicotine+=text"
+# Create wrapper script that configures then launches nicotine
+RUN echo '#!/bin/bash' > /usr/local/bin/start-nicotine && \
+    echo 'set -e' >> /usr/local/bin/start-nicotine && \
+    echo '/usr/local/bin/configure-nicotine.sh' >> /usr/local/bin/start-nicotine && \
+    echo 'exec nicotine --isolated' >> /usr/local/bin/start-nicotine && \
+    chmod +x /usr/local/bin/start-nicotine
 
-# Use custom entrypoint to configure Nicotine+ before starting
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+# Switch back to guiwebuser
+USER guiwebuser
 
-# Start Nicotine+ with Xpra
-CMD ["start-app", "--title", "Nicotine+ (Xpra)", "nicotine", "--isolated"]
+# Use the base image's start script, passing our nicotine wrapper
+CMD ["start", "/usr/local/bin/start-nicotine"]

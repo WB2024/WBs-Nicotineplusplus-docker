@@ -26,9 +26,17 @@ https://nicotine-plus.org/doc/PLUGINS.html
 EOF
 
 # Configure Nicotine+ settings
-configure-nicotine.sh
+/usr/local/bin/configure-nicotine.sh
 
 log "Configuration complete. Starting application..."
 
-# Execute the original entrypoint (from gui-web-base)
-exec "$@"
+# Call the base image's entrypoint (which should be in /init or similar)
+# The base image uses dumb-init, so we exec into that
+if [ -f "/init" ]; then
+    exec /init "$@"
+elif [ -f "/usr/bin/dumb-init" ]; then
+    exec /usr/bin/dumb-init -- "$@"
+else
+    # Fallback: just exec the command directly
+    exec "$@"
+fi
