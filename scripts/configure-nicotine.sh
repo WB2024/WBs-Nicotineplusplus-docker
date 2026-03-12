@@ -45,32 +45,47 @@ sed -i "s/^dark_mode = .*/dark_mode = ${NICOTINE_DARKMODE}/" "$CONFIG_FILE"
 
 # Disable tray icon (doesn't work in web interface anyway)
 if [ "${NICOTINE_TRAY_ICON:-False}" = "False" ]; then
+    log "Disabling tray icon"
     sed -i "s/^trayicon = .*/trayicon = False/" "$CONFIG_FILE"
 fi
 
-# Disable notifications (these cause popups in Xpra)
-if [ "${NICOTINE_NOTIFY_FILE:-False}" = "False" ]; then
-    sed -i "s/^notification_popup_file = .*/notification_popup_file = False/" "$CONFIG_FILE"
-fi
+# Configure bandwidth and disable congestion management
+log "Configuring bandwidth and disabling congestion management"
+sed -i "s/^use_upload_speed_limit = .*/use_upload_speed_limit = unlimited/" "$CONFIG_FILE"
+sed -i "s/^uploadlimit = .*/uploadlimit = 0/" "$CONFIG_FILE"
+sed -i "s/^uploadlimitalt = .*/uploadlimitalt = 0/" "$CONFIG_FILE"
+sed -i "s/^use_download_speed_limit = .*/use_download_speed_limit = unlimited/" "$CONFIG_FILE"
+sed -i "s/^downloadlimit = .*/downloadlimit = 0/" "$CONFIG_FILE"
+sed -i "s/^downloadlimitalt = .*/downloadlimitalt = 0/" "$CONFIG_FILE"
+sed -i "s/^limitby = .*/limitby = False/" "$CONFIG_FILE"
+sed -i "s/^autoclear_downloads = .*/autoclear_downloads = False/" "$CONFIG_FILE"
+sed -i "s/^autoclear_uploads = .*/autoclear_uploads = False/" "$CONFIG_FILE"
 
-if [ "${NICOTINE_NOTIFY_FOLDER:-False}" = "False" ]; then
-    sed -i "s/^notification_popup_folder = .*/notification_popup_folder = False/" "$CONFIG_FILE"
-fi
+# Disable ALL notification types persistently
+log "Disabling all notifications"
 
-if [ "${NICOTINE_NOTIFY_TITLE:-False}" = "False" ]; then
-    sed -i "s/^notification_window_title = .*/notification_window_title = False/" "$CONFIG_FILE"
-fi
+# Desktop notifications
+sed -i "s/^notification_popup_file = .*/notification_popup_file = False/" "$CONFIG_FILE"
+sed -i "s/^notification_popup_folder = .*/notification_popup_folder = False/" "$CONFIG_FILE"
+sed -i "s/^notification_popup_private_message = .*/notification_popup_private_message = False/" "$CONFIG_FILE"
+sed -i "s/^notification_popup_chatroom = .*/notification_popup_chatroom = False/" "$CONFIG_FILE"
+sed -i "s/^notification_popup_chatroom_mention = .*/notification_popup_chatroom_mention = False/" "$CONFIG_FILE"
+sed -i "s/^notification_popup_wish = .*/notification_popup_wish = False/" "$CONFIG_FILE"
 
-if [ "${NICOTINE_NOTIFY_PM:-False}" = "False" ]; then
-    sed -i "s/^notification_popup_private_message = .*/notification_popup_private_message = False/" "$CONFIG_FILE"
-fi
+# Window/Tab notifications
+sed -i "s/^notification_window_title = .*/notification_window_title = False/" "$CONFIG_FILE"
+sed -i "s/^notification_tab_colors = .*/notification_tab_colors = False/" "$CONFIG_FILE"
 
-if [ "${NICOTINE_NOTIFY_CHATROOM:-False}" = "False" ]; then
-    sed -i "s/^notification_popup_chatroom = .*/notification_popup_chatroom = False/" "$CONFIG_FILE"
-fi
+# Sound notifications
+sed -i "s/^notification_sound_file = .*/notification_sound_file = False/" "$CONFIG_FILE"
+sed -i "s/^notification_sound_folder = .*/notification_sound_folder = False/" "$CONFIG_FILE"
+sed -i "s/^notification_sound_private_message = .*/notification_sound_private_message = False/" "$CONFIG_FILE"
+sed -i "s/^notification_sound_chatroom = .*/notification_sound_chatroom = False/" "$CONFIG_FILE"
+sed -i "s/^notification_sound_chatroom_mention = .*/notification_sound_chatroom_mention = False/" "$CONFIG_FILE"
+sed -i "s/^notification_sound_wish = .*/notification_sound_wish = False/" "$CONFIG_FILE"
 
-if [ "${NICOTINE_NOTIFY_MENTION:-False}" = "False" ]; then
-    sed -i "s/^notification_popup_chatroom_mention = .*/notification_popup_chatroom_mention = False/" "$CONFIG_FILE"
-fi
+# Additional notification settings
+sed -i "s/^notification_popup_sound = .*/notification_popup_sound = False/" "$CONFIG_FILE"
+sed -i "s/^notifications_enabled = .*/notifications_enabled = False/" "$CONFIG_FILE"
 
 log "Nicotine+ configuration complete"
