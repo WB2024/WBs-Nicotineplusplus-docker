@@ -22,7 +22,7 @@ This image uses **Xpra** instead of GTK Broadway, solving all the common issues:
 ```yaml
 services:
   nicotine:
-    image: wb2024/nicotineplus-xpra:latest
+    image: wb20244/nicotineplus-xpra:latest
     container_name: nicotine
     restart: unless-stopped
     ports:
@@ -73,7 +73,7 @@ docker run -d \
   -v ./data:/home/guiwebuser/.local/share/nicotine \
   -v /path/to/downloads:/downloads \
   -v /path/to/shared:/shared:ro \
-  wb2024/nicotineplus-xpra:latest
+  wb20244/nicotineplus-xpra:latest
 ```
 
 ## ⚙️ Configuration
@@ -151,7 +151,7 @@ services:
     # VPN configuration...
 
   nicotine:
-    image: wb2024/nicotineplus-xpra:latest
+    image: wb20244/nicotineplus-xpra:latest
     container_name: nicotine
     network_mode: "service:vpn"
     depends_on:
@@ -212,7 +212,7 @@ server {
 ```yaml
 services:
   nicotine:
-    image: wb2024/nicotineplus-xpra:latest
+    image: wb20244/nicotineplus-xpra:latest
     container_name: nicotine
     restart: unless-stopped
     ports:
@@ -308,7 +308,7 @@ This image is built on [aandree5/gui-web-base](https://github.com/aandree5/gui-w
 ```bash
 git clone https://github.com/WB2024/WBs-Nicotineplusplus-docker.git
 cd WBs-Nicotineplusplus-docker
-docker build -t wb2024/nicotineplus-xpra:latest .
+docker build -t wb20244/nicotineplus-xpra:latest .
 ```
 
 ## 📝 License
@@ -350,7 +350,7 @@ WBs-Nicotineplus-docker/
 
 ## 🔗 Links
 
-- **Docker Hub**: [wb2024/nicotineplus-xpra](https://hub.docker.com/r/wb2024/nicotineplus-xpra) *(coming soon)*
+- **Docker Hub**: [wb20244/nicotineplus-xpra](https://hub.docker.com/r/wb20244/nicotineplus-xpra) *(coming soon)*
 - **GitHub**: [WB2024/WBs-Nicotineplus-docker](https://github.com/WB2024/WBs-Nicotineplusplus-docker)
 - **Nicotine+ Documentation**: [https://nicotine-plus.org/doc/](https://nicotine-plus.org/doc/)
 - **Report Issues**: [GitHub Issues](https://github.com/WB2024/WBs-Nicotineplusplus-docker/issues)
