@@ -1,0 +1,26 @@
+[server]
+auto_connect_startup = True
+login = 
+passw = 
+portrange = (2234, 2234)
+upnp = False
+
+[ui]
+dark_mode = True
+trayicon = False
+notification_popup_file = False
+notification_popup_folder = False
+notification_window_title = False
+notification_popup_private_message = False
+notification_popup_chatroom = False
+notification_popup_chatroom_mention = False
+
+[transfers]
+downloaddir = /home/gwb/.local/share/nicotine/downloads
+incompletedir = /home/gwb/.local/share/nicotine/incomplete
+uploaddir = /home/gwb/.local/share/nicotine/received
+plugindir = /home/gwb/.local/share/nicotine/plugins
+
+[logging]
+debugmodeenabled = False
+logfilepath = /home/gwb/.local/share/nicotine/logs/

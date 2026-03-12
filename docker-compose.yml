@@ -1,0 +1,50 @@
+---
+services:
+  nicotine:
+    image: wb2024/nicotineplus-xpra:latest
+    container_name: nicotine-xpra
+    restart: unless-stopped
+    
+    ports:
+      - "5443:5443"  # HTTPS web interface
+      - "2234:2234"  # Nicotine+ listening port
+    
+    environment:
+      # User/Group IDs (match your host user)
+      - PUID=1000
+      - PGID=1000
+      - UMASK=022
+      
+      # Timezone
+      - TZ=America/New_York
+      
+      # Nicotine+ Soulseek credentials
+      - NICOTINE_LOGIN=YourSoulseekUsername
+      - NICOTINE_PASSWORD=YourSoulseekPassword
+      
+      # Nicotine+ settings
+      - NICOTINE_AUTO_CONNECT=True
+      - NICOTINE_DARKMODE=True
+      - NICOTINE_UPNP=False
+      - NICOTINE_LISTEN_PORT=2234
+      
+      # Optional: Allow HTTP (useful behind reverse proxy)
+      # - ALLOW_HTTP=true
+    
+    volumes:
+      # Persistent config and data
+      - ./data/config:/home/gwb/.config/nicotine
+      - ./data/share:/home/gwb/.local/share/nicotine
+      
+      # Mount your download/share directories
+      - /path/to/downloads:/downloads
+      - /path/to/shared:/shared
+    
+    # Optional: Use with VPN container
+    # network_mode: "container:vpn-container-name"
+    
+    healthcheck:
+      test: ["CMD", "curl", "-f", "https://localhost:5443"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
