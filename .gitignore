@@ -1,21 +1,20 @@
-gitignore
-# Docker build artifacts
-*.log
-.dockerignore
-
-# Test data
-data/
-test-data/
-
-# Environment files
-.env
-.env.local
-
-# macOS
-.DS_Store
-
-# IDE
-.vscode/
-.idea/
+# Editor files
 *.swp
 *.swo
+*~
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker runtime
+data/
+config/
+*.log
+
+# Backup files
+*.backup
+*.bak
+*.old

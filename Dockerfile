@@ -20,8 +20,23 @@ ENV NICOTINE_LOGIN="" \
     NICOTINE_DARKMODE="True" \
     NICOTINE_UPNP="False" \
     NICOTINE_LISTEN_PORT="2234" \
+    NICOTINE_TRAY_ICON="False" \
+    NICOTINE_NOTIFY_FILE="False" \
+    NICOTINE_NOTIFY_FOLDER="False" \
+    NICOTINE_NOTIFY_TITLE="False" \
+    NICOTINE_NOTIFY_PM="False" \
+    NICOTINE_NOTIFY_CHATROOM="False" \
+    NICOTINE_NOTIFY_MENTION="False" \
     NICOTINE_DATA_DIR="/home/guiwebuser/.local/share/nicotine" \
     NICOTINE_CONFIG_DIR="/home/guiwebuser/.config/nicotine"
+
+# Xpra display settings
+ENV DISPLAY_WIDTH="1920" \
+    DISPLAY_HEIGHT="1080" \
+    XPRA_ENCODING="auto" \
+    XPRA_QUALITY="auto" \
+    XPRA_SPEED="auto" \
+    XPRA_COMPRESSION="auto"
 
 # Expose Nicotine+ listening port (default 2234)
 EXPOSE 2234
@@ -56,15 +71,48 @@ RUN mkdir -p "${NICOTINE_CONFIG_DIR}" \
 COPY --chown=1000:1000 config/config-default "${NICOTINE_CONFIG_DIR}/config-default"
 COPY --chmod=755 scripts/configure-nicotine.sh /usr/local/bin/configure-nicotine.sh
 
-# Create wrapper script that configures then launches nicotine
+# Create wrapper script that configures then launches nicotine with display settings
 RUN echo '#!/bin/bash' > /usr/local/bin/start-nicotine && \
     echo 'set -e' >> /usr/local/bin/start-nicotine && \
+    echo '' >> /usr/local/bin/start-nicotine && \
+    echo '# Configure Nicotine+ settings' >> /usr/local/bin/start-nicotine && \
     echo '/usr/local/bin/configure-nicotine.sh' >> /usr/local/bin/start-nicotine && \
+    echo '' >> /usr/local/bin/start-nicotine && \
+    echo '# Set display resolution' >> /usr/local/bin/start-nicotine && \
+    echo 'export DISPLAY=:100' >> /usr/local/bin/start-nicotine && \
+    echo '' >> /usr/local/bin/start-nicotine && \
+    echo '# Launch Nicotine+' >> /usr/local/bin/start-nicotine && \
     echo 'exec nicotine --isolated' >> /usr/local/bin/start-nicotine && \
     chmod +x /usr/local/bin/start-nicotine
+
+# Create custom Xpra start wrapper with configurable settings
+RUN echo '#!/bin/bash' > /usr/local/bin/start-xpra-custom && \
+    echo 'set -e' >> /usr/local/bin/start-xpra-custom && \
+    echo '' >> /usr/local/bin/start-xpra-custom && \
+    echo '# Default to auto if not set' >> /usr/local/bin/start-xpra-custom && \
+    echo 'ENCODING="${XPRA_ENCODING:-auto}"' >> /usr/local/bin/start-xpra-custom && \
+    echo 'QUALITY="${XPRA_QUALITY:-auto}"' >> /usr/local/bin/start-xpra-custom && \
+    echo 'SPEED="${XPRA_SPEED:-auto}"' >> /usr/local/bin/start-xpra-custom && \
+    echo 'COMPRESSION="${XPRA_COMPRESSION:-auto}"' >> /usr/local/bin/start-xpra-custom && \
+    echo 'WIDTH="${DISPLAY_WIDTH:-1920}"' >> /usr/local/bin/start-xpra-custom && \
+    echo 'HEIGHT="${DISPLAY_HEIGHT:-1080}"' >> /usr/local/bin/start-xpra-custom && \
+    echo '' >> /usr/local/bin/start-xpra-custom && \
+    echo '# Build Xpra command with options' >> /usr/local/bin/start-xpra-custom && \
+    echo 'XPRA_OPTS="--encoding=${ENCODING}"' >> /usr/local/bin/start-xpra-custom && \
+    echo '[ "$QUALITY" != "auto" ] && XPRA_OPTS="$XPRA_OPTS --quality=${QUALITY}"' >> /usr/local/bin/start-xpra-custom && \
+    echo '[ "$SPEED" != "auto" ] && XPRA_OPTS="$XPRA_OPTS --speed=${SPEED}"' >> /usr/local/bin/start-xpra-custom && \
+    echo '[ "$COMPRESSION" != "auto" ] && XPRA_OPTS="$XPRA_OPTS --compression=${COMPRESSION}"' >> /usr/local/bin/start-xpra-custom && \
+    echo 'XPRA_OPTS="$XPRA_OPTS --resize-display=${WIDTH}x${HEIGHT}"' >> /usr/local/bin/start-xpra-custom && \
+    echo '' >> /usr/local/bin/start-xpra-custom && \
+    echo 'echo "[XPRA] Starting with: $XPRA_OPTS"' >> /usr/local/bin/start-xpra-custom && \
+    echo '' >> /usr/local/bin/start-xpra-custom && \
+    echo '# Call base image start script with our app and Xpra options' >> /usr/local/bin/start-xpra-custom && \
+    echo 'export XPRA_OPTIONS="$XPRA_OPTS"' >> /usr/local/bin/start-xpra-custom && \
+    echo 'exec /usr/local/bin/start /usr/local/bin/start-nicotine' >> /usr/local/bin/start-xpra-custom && \
+    chmod +x /usr/local/bin/start-xpra-custom
 
 # Switch back to guiwebuser
 USER guiwebuser
 
-# Use the base image's start script, passing our nicotine wrapper
-CMD ["start", "/usr/local/bin/start-nicotine"]
+# Use our custom Xpra wrapper
+CMD ["/usr/local/bin/start-xpra-custom"]

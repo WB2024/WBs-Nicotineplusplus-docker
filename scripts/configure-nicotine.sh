@@ -43,13 +43,34 @@ fi
 log "Configuring UI settings"
 sed -i "s/^dark_mode = .*/dark_mode = ${NICOTINE_DARKMODE}/" "$CONFIG_FILE"
 
-# Disable unnecessary UI elements for web interface
-sed -i "s/^trayicon = .*/trayicon = False/" "$CONFIG_FILE"
-sed -i "s/^notification_popup_file = .*/notification_popup_file = False/" "$CONFIG_FILE"
-sed -i "s/^notification_popup_folder = .*/notification_popup_folder = False/" "$CONFIG_FILE"
-sed -i "s/^notification_window_title = .*/notification_window_title = False/" "$CONFIG_FILE"
-sed -i "s/^notification_popup_private_message = .*/notification_popup_private_message = False/" "$CONFIG_FILE"
-sed -i "s/^notification_popup_chatroom = .*/notification_popup_chatroom = False/" "$CONFIG_FILE"
-sed -i "s/^notification_popup_chatroom_mention = .*/notification_popup_chatroom_mention = False/" "$CONFIG_FILE"
+# Disable tray icon (doesn't work in web interface anyway)
+if [ "${NICOTINE_TRAY_ICON:-False}" = "False" ]; then
+    sed -i "s/^trayicon = .*/trayicon = False/" "$CONFIG_FILE"
+fi
+
+# Disable notifications (these cause popups in Xpra)
+if [ "${NICOTINE_NOTIFY_FILE:-False}" = "False" ]; then
+    sed -i "s/^notification_popup_file = .*/notification_popup_file = False/" "$CONFIG_FILE"
+fi
+
+if [ "${NICOTINE_NOTIFY_FOLDER:-False}" = "False" ]; then
+    sed -i "s/^notification_popup_folder = .*/notification_popup_folder = False/" "$CONFIG_FILE"
+fi
+
+if [ "${NICOTINE_NOTIFY_TITLE:-False}" = "False" ]; then
+    sed -i "s/^notification_window_title = .*/notification_window_title = False/" "$CONFIG_FILE"
+fi
+
+if [ "${NICOTINE_NOTIFY_PM:-False}" = "False" ]; then
+    sed -i "s/^notification_popup_private_message = .*/notification_popup_private_message = False/" "$CONFIG_FILE"
+fi
+
+if [ "${NICOTINE_NOTIFY_CHATROOM:-False}" = "False" ]; then
+    sed -i "s/^notification_popup_chatroom = .*/notification_popup_chatroom = False/" "$CONFIG_FILE"
+fi
+
+if [ "${NICOTINE_NOTIFY_MENTION:-False}" = "False" ]; then
+    sed -i "s/^notification_popup_chatroom_mention = .*/notification_popup_chatroom_mention = False/" "$CONFIG_FILE"
+fi
 
 log "Nicotine+ configuration complete"
