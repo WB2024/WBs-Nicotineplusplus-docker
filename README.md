@@ -1,5 +1,7 @@
 # Nicotine+ with Xpra Docker Image
 
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Support-yellow?logo=buy-me-a-coffee)](https://buymeacoffee.com/succinctrecords)
+
 A modern, feature-complete Docker image for [Nicotine+](https://nicotine-plus.org) (Soulseek client) with full web browser access via Xpra.
 
 ## 🌟 Why This Image?
@@ -314,6 +316,14 @@ docker build -t wb20244/nicotineplus-xpra:latest .
 ## 📝 License
 
 MIT License - see [LICENSE](LICENSE) file
+
+## 💖 Support
+
+If you find this project helpful, consider buying me a coffee!
+
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Support-yellow?logo=buy-me-a-coffee)](https://buymeacoffee.com/succinctrecords)
+
+Your support helps maintain and improve this project.
 
 ## 🙏 Credits
 
