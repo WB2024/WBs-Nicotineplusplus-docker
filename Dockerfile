@@ -1,7 +1,7 @@
 # Nicotine+ with Xpra - Full clipboard, audio, and proper window management
 # Based on aandree5/gui-web-base for superior web GUI experience
 
-FROM aandree5/gui-web-base:v1.1
+FROM aandree5/gui-web-base:v1.11
 
 LABEL org.opencontainers.image.authors="WB2024" \
       org.opencontainers.image.title="Nicotine+ with Xpra" \
