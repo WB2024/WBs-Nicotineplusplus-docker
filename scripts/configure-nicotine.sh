@@ -4,7 +4,7 @@
 # Updates config file based on environment variables
 
 CONFIG_FILE="${NICOTINE_CONFIG_DIR}/config"
-CONFIG_DEFAULT="${NICOTINE_CONFIG_DIR}/config-default"
+CONFIG_DEFAULT="/etc/nicotine/config-default"
 
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] CONFIG: $1"

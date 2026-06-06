@@ -68,7 +68,8 @@ RUN mkdir -p "${NICOTINE_CONFIG_DIR}" \
     && chown -R 1000:1000 "${NICOTINE_CONFIG_DIR}" "${NICOTINE_DATA_DIR}"
 
 # Copy configuration files
-COPY --chown=1000:1000 config/config-default "${NICOTINE_CONFIG_DIR}/config-default"
+RUN mkdir -p /etc/nicotine
+COPY --chown=1000:1000 config/config-default /etc/nicotine/config-default
 COPY --chmod=755 scripts/configure-nicotine.sh /usr/local/bin/configure-nicotine.sh
 
 # Create wrapper script that configures then launches nicotine
